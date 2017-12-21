@@ -3,8 +3,7 @@
 import os
 import sys
 import subprocess
-from PyQt4.QtCore import * 
-from PyQt4.QtGui import * 
+from PyQt4 import QtCore, QtGui
 import socket
 import struct
 import random
@@ -15,15 +14,15 @@ import atexit
 import glob
 OT_RSA = '109120132967399429278860960508995541528237502902798129123468757937266291492576446330739696001110603907230888610072655818825358503429057592827629436413108566029093628212635953836686562675849720620786279431090218017681061521755056710823876476444260558147179707119674283982419152118103759076030616683978566631413'
 
-try:
-    from PyQt4.phonon import Phonon
-except ImportError:
-    app = QtGui.QApplication(sys.argv)
-    QtGui.QMessageBox.critical(None, "Music Player",
-            "Your Qt installation does not have Phonon support.",
-            QtGui.QMessageBox.Ok | QtGui.QMessageBox.Default,
-            QtGui.QMessageBox.NoButton)
-    sys.exit(1)
+#try:
+#    from PyQt4.phonon import Phonon
+#except ImportError:
+#    app = QtGui.QApplication(sys.argv)
+#    QtGui.QMessageBox.critical(None, "Music Player",
+#            "Your Qt installation does not have Phonon support.",
+#            QtGui.QMessageBox.Ok | QtGui.QMessageBox.Default,
+#            QtGui.QMessageBox.NoButton)
+#    sys.exit(1)
     
 def padStr(string, length):
     strLen = len(string)
@@ -48,31 +47,31 @@ def quit(*a):
         w.thread.terminate()
     if w:
         del w.settings
-    QApplication.quit()
+    QtGui.QApplication.quit()
     
-class IpChanger(QWidget): 
+class IpChanger(QtGui.QWidget): 
     def __init__(self, *args): 
-        QWidget.__init__(self, *args) 
+        QtGui.QWidget.__init__(self, *args) 
  
         # Set title
         self.setWindowTitle("PyIpChanger v1.3")
         
         # create objects
-        label = QLabel(self.tr("Browse to your Tibia(.exe)."))
-        labelHostname = QLabel(self.tr("IP Address or Hostname"))
-        labelPort = QLabel(self.tr("Port"))
-        label3 = QLabel(self.tr("Messages"))
-        credit = QLabel(self.tr('Visit <a href="http://vapus.net">VAPus.net</a> for the latest versions. Lisenced under GPL.'))
+        label = QtGui.QLabel(self.tr("Browse to your Tibia(.exe)."))
+        labelHostname = QtGui.QLabel(self.tr("IP Address or Hostname"))
+        labelPort = QtGui.QLabel(self.tr("Port"))
+        label3 = QtGui.QLabel(self.tr("Messages"))
+        credit = QtGui.QLabel(self.tr('Visit <a href="http://vapus.net">VAPus.net</a> for the latest versions. Lisenced under GPL.'))
         
-        self.settings = QSettings('PyIpChanger', 'Vapus.net')
-        self.le = QLineEdit()
-        self.port = QLineEdit()
+        self.settings = QtCore.QSettings('PyIpChanger', 'Vapus.net')
+        self.le = QtGui.QLineEdit()
+        self.port = QtGui.QLineEdit()
         self.port.setMaxLength(4)
-        self.port.setValidator(QIntValidator(20, 0xFFFF, self))
-        self.pathToExe = QLineEdit()
-        self.pathButton = QPushButton("Browse for Tibia")
-        self.startButton = QPushButton("Start!")
-        self.te = QTextEdit()
+        self.port.setValidator(QtGui.QIntValidator(20, 0xFFFF, self))
+        self.pathToExe = QtGui.QLineEdit()
+        self.pathButton = QtGui.QPushButton("Browse for Tibia")
+        self.startButton = QtGui.QPushButton("Start!")
+        self.te = QtGui.QTextEdit()
         self.te.setFixedHeight(50)
         self.thread = None
         self.windowsClient = False
@@ -93,7 +92,7 @@ class IpChanger(QWidget):
         self.running = False
         
         # layout
-        layout = QGridLayout(self)
+        layout = QtGui.QGridLayout(self)
         layout.addWidget(label, 0, 0)
         layout.addWidget(self.pathToExe, 1, 0)
         layout.addWidget(self.pathButton, 1, 1)
@@ -108,13 +107,13 @@ class IpChanger(QWidget):
         self.setLayout(layout) 
 
         # create connections
-        self.connect(self.le, SIGNAL("returnPressed(void)"),
+        self.connect(self.le, QtCore.SIGNAL("returnPressed(void)"),
                      self.run)
                      
-        self.connect(self.startButton, SIGNAL("clicked()"),
+        self.connect(self.startButton, QtCore.SIGNAL("clicked()"),
                      self.run) 
                      
-        self.connect(self.pathButton, SIGNAL("clicked()"),
+        self.connect(self.pathButton, QtCore.SIGNAL("clicked()"),
                      self.browse)
 
         self.musicService = None
@@ -200,7 +199,7 @@ class IpChanger(QWidget):
         
     def browse(self):
         # Open file dialog
-        filename = QFileDialog.getOpenFileName(self, "Open Tibia", self.pathToExe.text())
+        filename = QtGui.QFileDialog.getOpenFileName(self, "Open Tibia", self.pathToExe.text())
         
         # Ignore if the user didn't specify a file.
         if not filename:
@@ -216,15 +215,15 @@ class IpChanger(QWidget):
         if file == None:
             file = command
             
-        class Thread(QThread):
+        class Thread(QtCore.QThread):
             def run(self):
-                self.emit( SIGNAL('_running()'))
+                self.emit( QtCore.SIGNAL('_running()'))
                 
                 # Start
                 self.p = subprocess.call(self.command, shell=False)
                 os.remove(self.file) 
                 
-                self.emit( SIGNAL('_notRunning()'))
+                self.emit( QtCore.SIGNAL('_notRunning()'))
        
         # Set thread parameters
         self.thread = Thread()
@@ -232,21 +231,21 @@ class IpChanger(QWidget):
         self.thread.command = command
         
         # Bind signals (threadsafe)
-        self.connect(self.thread, SIGNAL('_running()'), self._running)
-        self.connect(self.thread, SIGNAL('_notRunning()'), self._notRunning)
+        self.connect(self.thread, QtCore.SIGNAL('_running()'), self._running)
+        self.connect(self.thread, QtCore.SIGNAL('_notRunning()'), self._notRunning)
         
         # Start thread
         self.thread.start()
-        if not self.musicService or not self.musicService.isRunning():
-            self.musicService = MusicService()
-            self.musicService.server = str(self.le.text())
-            self.musicService.port = int(self.port.text()) + 10000
-            for n in xrange(10):
-                output = Phonon.AudioOutput(Phonon.GameCategory, self) 
-                m_media = Phonon.MediaObject(self) 
-                Phonon.createPath(m_media, output) 
-                self.musicService.players.append(m_media)
-            self.musicService.start()
+#       if not self.musicService or not self.musicService.isRunning():
+#           self.musicService = MusicService()
+#           self.musicService.server = str(self.le.text())
+#           self.musicService.port = int(self.port.text()) + 10000
+#           for n in xrange(10):
+#               output = Phonon.AudioOutput(Phonon.GameCategory, self) 
+#               m_media = Phonon.MediaObject(self) 
+#               Phonon.createPath(m_media, output) 
+#               self.musicService.players.append(m_media)
+#           self.musicService.start()
 
     def _running(self):
         self.startButton.setDisabled(True)
@@ -368,9 +367,9 @@ class IpChanger(QWidget):
 
 
     
-class MusicService(QThread):
+class MusicService(QtCore.QThread):
     def __init__(self, *a, **k):
-        QThread.__init__(self, *a, **k)
+        QtCore.QThread.__init__(self, *a, **k)
         self.server = ""
         self.port = 0
         self.files = {}
@@ -524,7 +523,7 @@ class MusicService(QThread):
         pass
         
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    app = QtGui.QApplication(sys.argv)
     app.setApplicationName("PyIpChanger")
     w = IpChanger()
     signal.signal(signal.SIGINT, quit)
