@@ -23,9 +23,9 @@ Instructions to run:
 
 #### Windows
 
-Install latest python 2 from https://www.python.org/downloads/windows/
-Install latest PyQt4 from https://www.riverbankcomputing.com/software/pyqt/download
-Install latest py2exe from https://sourceforge.net/projects/py2exe/
+- Install latest python 2 from https://www.python.org/downloads/windows/
+- Install latest PyQt4 from https://www.riverbankcomputing.com/software/pyqt/download
+- Install latest py2exe from https://sourceforge.net/projects/py2exe/
 
 Generate .exe file:
 
