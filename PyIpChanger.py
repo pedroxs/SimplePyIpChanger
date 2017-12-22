@@ -61,7 +61,7 @@ class IpChanger(QtGui.QWidget):
         labelHostname = QtGui.QLabel(self.tr("IP Address or Hostname"))
         labelPort = QtGui.QLabel(self.tr("Port"))
         label3 = QtGui.QLabel(self.tr("Messages"))
-        credit = QtGui.QLabel(self.tr('Visit <a href="http://vapus.net">VAPus.net</a> for the latest versions. Lisenced under GPL.'))
+        credit = QtGui.QLabel(self.tr('Visit <a href="https://github.com/pedroxs/SimplePyIpChanger/releases">SimplePyIpChanger</a> for the latest versions. Lisenced under GPL.'))
         
         self.settings = QtCore.QSettings('PyIpChanger', 'Vapus.net')
         self.le = QtGui.QLineEdit()
